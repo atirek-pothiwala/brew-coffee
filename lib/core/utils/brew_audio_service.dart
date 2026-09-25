@@ -9,7 +9,7 @@ class BrewAudioService {
 
   final AudioPlayer _player;
   CoffeeMachinePhase? _lastPhase;
-  bool _muted = false;
+  bool _muted = true;
 
   bool get muted => _muted;
 

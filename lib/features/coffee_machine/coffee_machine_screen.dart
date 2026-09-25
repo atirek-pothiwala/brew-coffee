@@ -72,7 +72,6 @@ class _CoffeeMachineScreenState extends State<CoffeeMachineScreen> {
                 EspressoMachineView(
                   phase: state.phase,
                   cupVisual: state.cupVisual,
-                  progress: state.progress,
                 ),
                 const SizedBox(height: 24),
                 Text(
