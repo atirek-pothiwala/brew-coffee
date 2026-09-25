@@ -17,11 +17,33 @@ class CoffeeProductCard extends StatelessWidget {
   final VoidCallback onFavorite;
   final bool isFavorite;
 
+  static List<BoxShadow> get _cardShadows => [
+        BoxShadow(
+          color: AppColors.darkCoffee.withOpacity(0.07),
+          blurRadius: 18,
+          offset: const Offset(0, 8),
+          spreadRadius: -2,
+        ),
+        BoxShadow(
+          color: AppColors.darkCoffee.withOpacity(0.04),
+          blurRadius: 6,
+          offset: const Offset(0, 2),
+        ),
+      ];
+
   @override
   Widget build(BuildContext context) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Column(
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: _cardShadows,
+      ),
+      child: Card(
+        margin: EdgeInsets.zero,
+        elevation: 2,
+        shadowColor: AppColors.darkCoffee.withOpacity(0.12),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
@@ -97,6 +119,7 @@ class CoffeeProductCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }
