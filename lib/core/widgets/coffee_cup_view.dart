@@ -77,14 +77,18 @@ class _CoffeeCupViewState extends State<CoffeeCupView>
         final bodyWidth = widget.size * 0.68;
         final handleExtent = widget.size * handleExtentFactor;
         final canvasWidth = bodyWidth + handleExtent;
-        return SizedBox(
-          width: canvasWidth,
-          height: widget.size * 1.05,
-          child: CustomPaint(
-            painter: _MugPainter(
-              visual: display,
-              bodyWidth: bodyWidth,
-              handleExtent: handleExtent,
+        // Shift so the mug body (not the handle) sits on the horizontal center line.
+        return Transform.translate(
+          offset: Offset(handleExtent / 2, 0),
+          child: SizedBox(
+            width: canvasWidth,
+            height: widget.size * 1.05,
+            child: CustomPaint(
+              painter: _MugPainter(
+                visual: display,
+                bodyWidth: bodyWidth,
+                handleExtent: handleExtent,
+              ),
             ),
           ),
         );
