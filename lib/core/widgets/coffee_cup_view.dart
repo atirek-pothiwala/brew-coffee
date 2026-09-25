@@ -74,7 +74,7 @@ class _CoffeeCupViewState extends State<CoffeeCupView>
         final display =
             _lerpVisual(_fromVisual, _toVisual, _fillController.value);
         return SizedBox(
-          width: widget.size * 1.15,
+          width: widget.size * 1.28,
           height: widget.size * 1.05,
           child: CustomPaint(
             painter: _MugPainter(visual: display),
@@ -102,10 +102,14 @@ class _MugPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    const handleExtentFactor = 0.2;
+    const bodyWidthFactor = 0.62;
+    final bodyWidth = size.width * bodyWidthFactor;
+    final bodyLeft = (size.width - bodyWidth - size.width * handleExtentFactor) / 2;
     final body = Rect.fromLTWH(
-      size.width * 0.08,
+      bodyLeft,
       size.height * 0.22,
-      size.width * 0.58,
+      bodyWidth,
       size.height * 0.62,
     );
 
@@ -123,7 +127,7 @@ class _MugPainter extends CustomPainter {
     final handle = Path();
     handle.moveTo(body.right - 2, body.top + body.height * 0.15);
     handle.quadraticBezierTo(
-      body.right + size.width * 0.22,
+      body.right + size.width * handleExtentFactor,
       body.center.dy,
       body.right - 2,
       body.bottom - body.height * 0.12,

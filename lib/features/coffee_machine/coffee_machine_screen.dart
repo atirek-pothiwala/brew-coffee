@@ -2,7 +2,7 @@ import 'package:brew_coffee/core/theme/app_colors.dart';
 import 'package:brew_coffee/features/cart/cart_cubit.dart';
 import 'package:brew_coffee/features/coffee_customization/customization_cubit.dart';
 import 'package:brew_coffee/features/coffee_machine/coffee_machine_cubit.dart';
-import 'package:brew_coffee/features/coffee_machine/widgets/espresso_machine_view.dart';
+import 'package:brew_coffee/features/coffee_machine/widgets/brew_preparation_view.dart';
 import 'package:brew_coffee/domain/entities/enums.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -33,12 +33,17 @@ class _CoffeeMachineScreenState extends State<CoffeeMachineScreen> {
       builder: (context, state) {
         return Scaffold(
           backgroundColor: AppColors.primaryBackground,
-          appBar: AppBar(title: const Text('COFFEE MACHINE')),
+          appBar: AppBar(title: const Text('PREPARING YOUR COFFEE')),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-                EspressoMachineView(cupVisual: state.cupVisual),
+                BrewPreparationView(
+                  customization: state.customization,
+                  cupVisual: state.cupVisual,
+                  progress: state.progress,
+                  phase: state.phase,
+                ),
                 const SizedBox(height: 24),
                 Text(
                   state.phase.operationLabel,
@@ -46,14 +51,6 @@ class _CoffeeMachineScreenState extends State<CoffeeMachineScreen> {
                         fontWeight: FontWeight.w600,
                       ),
                   textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 12),
-                LinearProgressIndicator(
-                  value: state.progress,
-                  backgroundColor: AppColors.borderDivider,
-                  color: AppColors.primaryCoffee,
-                  minHeight: 8,
-                  borderRadius: BorderRadius.circular(4),
                 ),
                 const SizedBox(height: 8),
                 Text(
