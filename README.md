@@ -34,10 +34,14 @@ flutter run -d chrome
 ## Build for GitHub Pages
 
 ```bash
-flutter build web --base-href "/<your-repo-name>/"
+flutter build web --release --base-href "/brew-coffee/"
 ```
 
-Deploy the contents of `build/web` to your Pages branch or `gh-pages`.
+## Live site
+
+GitHub Actions deploys `main` to Pages on every push.
+
+**URL:** [https://atirek-pothiwala.github.io/brew-coffee/](https://atirek-pothiwala.github.io/brew-coffee/)
 
 Path URL strategy is enabled in `main.dart` for clean deep links.
 
