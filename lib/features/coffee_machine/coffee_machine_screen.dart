@@ -43,21 +43,7 @@ class _CoffeeMachineScreenState extends State<CoffeeMachineScreen> {
                   cupVisual: state.cupVisual,
                   progress: state.progress,
                   phase: state.phase,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  state.phase.operationLabel,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '~${state.estimatedSecondsRemaining}s remaining',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.secondaryText,
-                      ),
+                  estimatedSecondsRemaining: state.estimatedSecondsRemaining,
                 ),
                 const SizedBox(height: 28),
                 if (state.phase == CoffeeMachinePhase.completed)

@@ -13,12 +13,14 @@ class BrewPreparationView extends StatelessWidget {
     required this.cupVisual,
     required this.progress,
     required this.phase,
+    required this.estimatedSecondsRemaining,
   });
 
   final CoffeeCustomization? customization;
   final CupVisualState cupVisual;
   final double progress;
   final CoffeeMachinePhase phase;
+  final int estimatedSecondsRemaining;
 
   static const _steps = [
     CoffeeMachinePhase.grindingBeans,
@@ -37,9 +39,25 @@ class BrewPreparationView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (c != null) _DrinkSummaryCard(customization: c),
-        const SizedBox(height: 28),
-        Center(child: CoffeeCupView(visual: cupVisual, size: 150)),
         const SizedBox(height: 20),
+        _PhaseTimeline(current: phase),
+        const SizedBox(height: 24),
+        Text(
+          phase.operationLabel,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '~$estimatedSecondsRemaining s remaining',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.secondaryText,
+              ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 16),
         ClipRRect(
           borderRadius: BorderRadius.circular(6),
           child: LinearProgressIndicator(
@@ -57,8 +75,8 @@ class BrewPreparationView extends StatelessWidget {
                 color: AppColors.secondaryText,
               ),
         ),
-        const SizedBox(height: 24),
-        _PhaseTimeline(current: phase),
+        const SizedBox(height: 28),
+        Center(child: CoffeeCupView(visual: cupVisual, size: 150)),
       ],
     );
   }
