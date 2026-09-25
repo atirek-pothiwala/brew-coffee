@@ -52,14 +52,14 @@ class _CoffeeMachineScreenState extends State<CoffeeMachineScreen> {
                       ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 Text(
-                  '${(state.progress * 100).round()}% · ~${state.estimatedSecondsRemaining}s remaining',
+                  '~${state.estimatedSecondsRemaining}s remaining',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppColors.secondaryText,
                       ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 28),
                 if (state.phase == CoffeeMachinePhase.completed)
                   SizedBox(
                     width: double.infinity,

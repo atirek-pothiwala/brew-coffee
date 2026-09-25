@@ -73,11 +73,19 @@ class _CoffeeCupViewState extends State<CoffeeCupView>
       builder: (context, _) {
         final display =
             _lerpVisual(_fromVisual, _toVisual, _fillController.value);
+        const handleExtentFactor = 0.2;
+        final bodyWidth = widget.size * 0.68;
+        final handleExtent = widget.size * handleExtentFactor;
+        final canvasWidth = bodyWidth + handleExtent;
         return SizedBox(
-          width: widget.size * 1.28,
+          width: canvasWidth,
           height: widget.size * 1.05,
           child: CustomPaint(
-            painter: _MugPainter(visual: display),
+            painter: _MugPainter(
+              visual: display,
+              bodyWidth: bodyWidth,
+              handleExtent: handleExtent,
+            ),
           ),
         );
       },
@@ -86,9 +94,15 @@ class _CoffeeCupViewState extends State<CoffeeCupView>
 }
 
 class _MugPainter extends CustomPainter {
-  _MugPainter({required this.visual});
+  _MugPainter({
+    required this.visual,
+    required this.bodyWidth,
+    required this.handleExtent,
+  });
 
   final CupVisualState visual;
+  final double bodyWidth;
+  final double handleExtent;
 
   Path _mugInteriorPath(Rect body) {
     return Path()
@@ -102,13 +116,7 @@ class _MugPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    const handleExtentFactor = 0.2;
-    const bodyWidthFactor = 0.62;
-    /// Nudge mug right so body + handle reads centered to the eye.
-    const horizontalNudgeFactor = 0.04;
-    final bodyWidth = size.width * bodyWidthFactor;
-    final bodyLeft = (size.width - bodyWidth - size.width * handleExtentFactor) / 2 +
-        size.width * horizontalNudgeFactor;
+    final bodyLeft = 0.0;
     final body = Rect.fromLTWH(
       bodyLeft,
       size.height * 0.22,
@@ -130,7 +138,7 @@ class _MugPainter extends CustomPainter {
     final handle = Path();
     handle.moveTo(body.right - 2, body.top + body.height * 0.15);
     handle.quadraticBezierTo(
-      body.right + size.width * handleExtentFactor,
+      body.right + handleExtent,
       body.center.dy,
       body.right - 2,
       body.bottom - body.height * 0.12,

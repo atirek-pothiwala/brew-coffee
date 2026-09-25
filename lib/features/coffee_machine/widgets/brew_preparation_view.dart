@@ -38,29 +38,26 @@ class BrewPreparationView extends StatelessWidget {
       children: [
         if (c != null) _DrinkSummaryCard(customization: c),
         const SizedBox(height: 28),
-        Center(
-          child: SizedBox(
-            width: 240,
-            height: 240,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                SizedBox(
-                  width: 220,
-                  height: 220,
-                  child: CircularProgressIndicator(
-                    value: progress > 0 ? progress : null,
-                    strokeWidth: 7,
-                    backgroundColor: AppColors.borderDivider,
-                    color: AppColors.primaryCoffee,
-                  ),
-                ),
-                CoffeeCupView(visual: cupVisual, size: 150),
-              ],
-            ),
+        Center(child: CoffeeCupView(visual: cupVisual, size: 150)),
+        const SizedBox(height: 20),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: LinearProgressIndicator(
+            value: progress > 0 ? progress : null,
+            minHeight: 10,
+            backgroundColor: AppColors.borderDivider,
+            color: AppColors.primaryCoffee,
           ),
         ),
-        const SizedBox(height: 28),
+        const SizedBox(height: 8),
+        Text(
+          '${(progress * 100).round()}% complete',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: AppColors.secondaryText,
+              ),
+        ),
+        const SizedBox(height: 24),
         _PhaseTimeline(current: phase),
       ],
     );
