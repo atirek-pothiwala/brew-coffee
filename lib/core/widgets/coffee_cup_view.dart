@@ -104,8 +104,11 @@ class _MugPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     const handleExtentFactor = 0.2;
     const bodyWidthFactor = 0.62;
+    /// Nudge mug right so body + handle reads centered to the eye.
+    const horizontalNudgeFactor = 0.04;
     final bodyWidth = size.width * bodyWidthFactor;
-    final bodyLeft = (size.width - bodyWidth - size.width * handleExtentFactor) / 2;
+    final bodyLeft = (size.width - bodyWidth - size.width * handleExtentFactor) / 2 +
+        size.width * horizontalNudgeFactor;
     final body = Rect.fromLTWH(
       bodyLeft,
       size.height * 0.22,
@@ -135,7 +138,7 @@ class _MugPainter extends CustomPainter {
     canvas.drawPath(
       handle,
       Paint()
-        ..color = AppColors.cardBackground
+        ..color = Colors.white
         ..style = PaintingStyle.stroke
         ..strokeWidth = 10
         ..strokeCap = StrokeCap.round,
@@ -154,25 +157,17 @@ class _MugPainter extends CustomPainter {
         (visual.espressoLevel + visual.milkLevel).clamp(0.0, 0.92);
     final liquidTop = interior.bottom - interior.height * fillFraction;
 
-    // Opaque ceramic shell (not glass)
-    final bodyGrad = ui.Gradient.linear(
-      body.topLeft,
-      body.bottomRight,
-      [
-        AppColors.cardBackground,
-        const Color(0xFFE8DDD0),
-      ],
-    );
+    // Pure white ceramic
     canvas.drawRRect(
       RRect.fromRectAndRadius(body, const Radius.circular(14)),
-      Paint()..shader = bodyGrad,
+      Paint()..color = Colors.white,
     );
     canvas.drawRRect(
       RRect.fromRectAndRadius(body.deflate(3), const Radius.circular(12)),
       Paint()
-        ..color = AppColors.primaryBackground.withOpacity(0.35)
+        ..color = AppColors.borderDivider.withOpacity(0.35)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 4,
+        ..strokeWidth = 3,
     );
     canvas.drawRRect(
       RRect.fromRectAndRadius(body, const Radius.circular(14)),
