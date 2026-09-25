@@ -1,5 +1,4 @@
 import 'package:brew_coffee/core/theme/app_colors.dart';
-import 'package:brew_coffee/core/utils/brew_audio_service.dart';
 import 'package:brew_coffee/features/cart/cart_cubit.dart';
 import 'package:brew_coffee/features/coffee_customization/customization_cubit.dart';
 import 'package:brew_coffee/features/coffee_machine/coffee_machine_cubit.dart';
@@ -19,8 +18,6 @@ class CoffeeMachineScreen extends StatefulWidget {
 }
 
 class _CoffeeMachineScreenState extends State<CoffeeMachineScreen> {
-  final BrewAudioService _audio = BrewAudioService();
-
   @override
   void initState() {
     super.initState();
@@ -31,48 +28,17 @@ class _CoffeeMachineScreenState extends State<CoffeeMachineScreen> {
   }
 
   @override
-  void dispose() {
-    _audio.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return BlocConsumer<CoffeeMachineCubit, CoffeeMachineState>(
-      listenWhen: (prev, next) => prev.phase != next.phase,
-      listener: (context, state) {
-        _audio.onPhaseChanged(state.phase);
-      },
+    return BlocBuilder<CoffeeMachineCubit, CoffeeMachineState>(
       builder: (context, state) {
         return Scaffold(
           backgroundColor: AppColors.primaryBackground,
-          appBar: AppBar(
-            title: const Text('COFFEE MACHINE'),
-            actions: [
-              IconButton(
-                tooltip: _audio.muted ? 'Unmute sounds' : 'Mute sounds',
-                onPressed: () {
-                  setState(() {
-                    _audio.toggleMute();
-                    if (_audio.muted) {
-                      _audio.onPhaseChanged(CoffeeMachinePhase.idle);
-                    } else {
-                      _audio.onPhaseChanged(state.phase);
-                    }
-                  });
-                },
-                icon: Icon(_audio.muted ? Icons.volume_off : Icons.volume_up),
-              ),
-            ],
-          ),
+          appBar: AppBar(title: const Text('COFFEE MACHINE')),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
               children: [
-                EspressoMachineView(
-                  phase: state.phase,
-                  cupVisual: state.cupVisual,
-                ),
+                EspressoMachineView(cupVisual: state.cupVisual),
                 const SizedBox(height: 24),
                 Text(
                   state.phase.operationLabel,
@@ -120,7 +86,6 @@ class _CoffeeMachineScreenState extends State<CoffeeMachineScreen> {
                     width: double.infinity,
                     child: OutlinedButton(
                       onPressed: () {
-                        _audio.onPhaseChanged(CoffeeMachinePhase.idle);
                         context.read<CoffeeMachineCubit>().reset();
                         context.pop();
                       },
