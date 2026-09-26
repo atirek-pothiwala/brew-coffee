@@ -1,7 +1,10 @@
-import 'package:brew_coffee/core/theme/app_colors.dart';
+import 'package:brew_coffee/core/theme/receipt_theme.dart';
 import 'package:brew_coffee/core/utils/breakpoints.dart';
-import 'package:brew_coffee/core/utils/currency_format.dart';
 import 'package:brew_coffee/core/widgets/coffee_cup_view.dart';
+import 'package:brew_coffee/core/widgets/receipt/receipt_divider.dart';
+import 'package:brew_coffee/core/widgets/receipt/receipt_line_widgets.dart';
+import 'package:brew_coffee/core/widgets/receipt/receipt_paper.dart';
+import 'package:brew_coffee/core/widgets/receipt/receipt_zigzag_bottom.dart';
 import 'package:brew_coffee/domain/entities/coffee_customization.dart';
 import 'package:brew_coffee/domain/entities/cup_visual_state.dart';
 import 'package:brew_coffee/domain/entities/enums.dart';
@@ -64,38 +67,52 @@ class _Preview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const CoffeeCupView(
-            visual: CupVisualState(espressoLevel: 0.4, milkLevel: 0.2),
-            size: 180,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            customization.coffee.name,
-            style: Theme.of(context).textTheme.titleLarge,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          ...customization.summaryLines().map(
-                (l) => Text(
-                  l,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
-                ),
+    return Center(
+      child: ConstrainedBox(
+        constraints: ReceiptTheme.paperConstraints(),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ReceiptPaper(
+              padding: const EdgeInsets.fromLTRB(20, 28, 20, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Center(
+                    child: CoffeeCupView(
+                      visual: CupVisualState(espressoLevel: 0.4, milkLevel: 0.2),
+                      size: 180,
+                    ),
+                  ),
+                  const ReceiptDivider(),
+                  Text(
+                    customization.coffee.name.toUpperCase(),
+                    style: ReceiptTheme.lineTitle(context),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  ...customization.summaryLines().map(
+                        (l) => Padding(
+                          padding: const EdgeInsets.only(bottom: 2),
+                          child: Text(
+                            l,
+                            style: ReceiptTheme.lineDetail(context),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                  const ReceiptDivider(),
+                  ReceiptRowTotal(
+                    label: 'TOTAL',
+                    amount: customization.unitPrice,
+                    emphasize: true,
+                  ),
+                ],
               ),
-          const SizedBox(height: 12),
-          Text(
-            formatCurrency(customization.unitPrice),
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: AppColors.primaryCoffee,
-                  fontWeight: FontWeight.w700,
-                ),
-          ),
-        ],
+            ),
+            const ReceiptZigzagBottom(),
+          ],
+        ),
       ),
     );
   }
