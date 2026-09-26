@@ -64,34 +64,38 @@ class _Preview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            const CoffeeCupView(
-              visual: CupVisualState(espressoLevel: 0.4, milkLevel: 0.2),
-              size: 180,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              customization.coffee.name,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            ...customization.summaryLines().map(
-                  (l) => Text(l, style: Theme.of(context).textTheme.bodyMedium),
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const CoffeeCupView(
+            visual: CupVisualState(espressoLevel: 0.4, milkLevel: 0.2),
+            size: 180,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            customization.coffee.name,
+            style: Theme.of(context).textTheme.titleLarge,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          ...customization.summaryLines().map(
+                (l) => Text(
+                  l,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
                 ),
-            const SizedBox(height: 12),
-            Text(
-              formatCurrency(customization.unitPrice),
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: AppColors.primaryCoffee,
-                    fontWeight: FontWeight.w700,
-                  ),
-            ),
-          ],
-        ),
+              ),
+          const SizedBox(height: 12),
+          Text(
+            formatCurrency(customization.unitPrice),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: AppColors.primaryCoffee,
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+        ],
       ),
     );
   }
