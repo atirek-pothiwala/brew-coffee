@@ -233,54 +233,208 @@ class _MugPainter extends CustomPainter {
         ..strokeWidth = 3,
     );
 
-    _drawToppings(canvas, body);
+    final surfaceY = fillFraction > 0.01
+        ? liquidTop
+        : body.top + body.height * 0.55;
+    _drawToppings(canvas, body, surfaceY);
     if (visual.showSteam) {
       _drawSteam(canvas, Offset(body.center.dx, body.top - 8));
     }
   }
 
-  void _drawToppings(Canvas canvas, Rect body) {
-    final center = Offset(body.center.dx, body.top + 10);
+  void _drawToppings(Canvas canvas, Rect body, double surfaceY) {
+    final rim = Offset(body.center.dx, surfaceY.clamp(body.top + 8, body.bottom - 12));
+    final hasPowder =
+        visual.showCinnamon || visual.showCocoa || visual.showCaramelDrizzle;
+
+    if (hasPowder && !visual.showWhippedCream) {
+      canvas.save();
+      canvas.clipPath(_mugInteriorPath(body));
+      if (visual.showCaramelDrizzle) {
+        _drawCaramelDrizzle(canvas, body, rim, onCream: false);
+      }
+      if (visual.showCocoa) {
+        _drawPowderDust(
+          canvas,
+          rim,
+          baseColor: AppColors.darkCoffee,
+          speckleColor: const Color(0xFF2A1810),
+          intensity: 0.55,
+        );
+      }
+      if (visual.showCinnamon) {
+        _drawPowderDust(
+          canvas,
+          rim,
+          baseColor: AppColors.caramelAccent,
+          speckleColor: const Color(0xFFA66B3D),
+          intensity: 0.45,
+        );
+      }
+      canvas.restore();
+    }
+
     if (visual.showWhippedCream) {
-      canvas.drawCircle(center, 16, Paint()..color = const Color(0xFFFFF8F0));
+      final creamCenter = Offset(body.center.dx, body.top + 6);
+      _drawWhippedCream(canvas, creamCenter);
+      if (visual.showCaramelDrizzle) {
+        _drawCaramelDrizzle(canvas, body, creamCenter.translate(0, -2), onCream: true);
+      }
+      if (visual.showCocoa) {
+        _drawPowderDust(
+          canvas,
+          creamCenter.translate(0, 4),
+          baseColor: AppColors.darkCoffee,
+          speckleColor: const Color(0xFF2A1810),
+          intensity: 0.35,
+          radiusScale: 0.85,
+        );
+      }
+      if (visual.showCinnamon) {
+        _drawPowderDust(
+          canvas,
+          creamCenter.translate(0, 2),
+          baseColor: AppColors.caramelAccent,
+          speckleColor: const Color(0xFFA66B3D),
+          intensity: 0.4,
+          radiusScale: 0.8,
+        );
+      }
+    }
+  }
+
+  void _drawWhippedCream(Canvas canvas, Offset center) {
+    const peaks = <Offset>[
+      Offset(0, -6),
+      Offset(-16, 0),
+      Offset(16, 0),
+      Offset(-9, 10),
+      Offset(10, 9),
+      Offset(0, 12),
+    ];
+    const radii = <double>[15, 12, 12, 10, 10, 11];
+
+    canvas.drawOval(
+      Rect.fromCenter(
+        center: center.translate(0, 14),
+        width: 44,
+        height: 10,
+      ),
+      Paint()..color = AppColors.darkCoffee.withOpacity(0.06),
+    );
+
+    for (var i = 0; i < peaks.length; i++) {
+      final pos = center + peaks[i];
+      final r = radii[i];
+      final paint = Paint()
+        ..shader = ui.Gradient.radial(
+          pos + Offset(-r * 0.25, -r * 0.35),
+          r * 1.1,
+          [
+            const Color(0xFFFFFDF9),
+            const Color(0xFFFFF3E6),
+            const Color(0xFFE8D2BE),
+          ],
+          [0.0, 0.55, 1.0],
+        );
+      canvas.drawCircle(pos, r, paint);
       canvas.drawCircle(
-        center + const Offset(-8, 4),
-        10,
-        Paint()..color = const Color(0xFFFFFDF9),
+        pos + Offset(-r * 0.2, -r * 0.25),
+        r * 0.22,
+        Paint()..color = Colors.white.withOpacity(0.65),
       );
+    }
+  }
+
+  void _drawPowderDust(
+    Canvas canvas,
+    Offset center, {
+    required Color baseColor,
+    required Color speckleColor,
+    required double intensity,
+    double radiusScale = 1,
+  }) {
+    final w = 38 * radiusScale;
+    final h = 14 * radiusScale;
+    canvas.drawOval(
+      Rect.fromCenter(center: center.translate(0, 3), width: w, height: h),
+      Paint()..color = baseColor.withOpacity(intensity * 0.35),
+    );
+
+    const speckles = <Offset>[
+      Offset(-14, -2),
+      Offset(-8, 3),
+      Offset(-2, -1),
+      Offset(4, 4),
+      Offset(10, 0),
+      Offset(15, 3),
+      Offset(-11, 6),
+      Offset(0, 5),
+      Offset(7, -3),
+      Offset(-5, -4),
+      Offset(12, -2),
+      Offset(-16, 2),
+    ];
+    for (final o in speckles) {
+      final size = 0.9 + (o.dx.abs() % 3) * 0.35;
       canvas.drawCircle(
-        center + const Offset(8, 4),
-        10,
-        Paint()..color = const Color(0xFFFFFDF9),
+        center + o,
+        size,
+        Paint()..color = speckleColor.withOpacity(intensity * 0.85),
       );
     }
-    if (visual.showCinnamon) {
-      canvas.drawCircle(center, 4, Paint()..color = AppColors.caramelAccent);
-    }
-    if (visual.showCocoa) {
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromCenter(center: center.translate(0, 4), width: 22, height: 5),
-          const Radius.circular(2),
-        ),
-        Paint()..color = AppColors.darkCoffee.withOpacity(0.55),
-      );
-    }
-    if (visual.showCaramelDrizzle) {
+  }
+
+  void _drawCaramelDrizzle(
+    Canvas canvas,
+    Rect body,
+    Offset anchor, {
+    required bool onCream,
+  }) {
+    final drips = onCream
+        ? <List<Offset>>[
+            [Offset(-10, -4), Offset(-4, 14), Offset(-8, 26)],
+            [Offset(2, -6), Offset(6, 12), Offset(2, 24)],
+            [Offset(12, -2), Offset(14, 10), Offset(10, 22)],
+          ]
+        : <List<Offset>>[
+            [Offset(-12, 0), Offset(-6, 18), Offset(-10, 34)],
+            [Offset(0, -2), Offset(4, 16), Offset(0, 32)],
+            [Offset(10, 1), Offset(12, 20), Offset(8, 36)],
+          ];
+
+    for (final pts in drips) {
       final path = Path();
-      path.moveTo(center.dx - 8, body.top + 2);
+      path.moveTo(anchor.dx + pts[0].dx, anchor.dy + pts[0].dy);
       path.quadraticBezierTo(
-        center.dx,
-        body.top + 28,
-        center.dx + 10,
-        body.top + 42,
+        anchor.dx + pts[1].dx,
+        anchor.dy + pts[1].dy,
+        anchor.dx + pts[2].dx,
+        anchor.dy + pts[2].dy,
       );
       canvas.drawPath(
         path,
         Paint()
-          ..color = AppColors.caramelAccent
+          ..color = const Color(0xFF9A5E28).withOpacity(0.35)
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 3,
+          ..strokeWidth = 5
+          ..strokeCap = StrokeCap.round,
+      );
+      canvas.drawPath(
+        path,
+        Paint()
+          ..color = const Color(0xFFD4A574)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3
+          ..strokeCap = StrokeCap.round,
+      );
+      canvas.drawPath(
+        path,
+        Paint()
+          ..color = const Color(0xFFFFE8C8).withOpacity(0.55)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1
+          ..strokeCap = StrokeCap.round,
       );
     }
   }

@@ -1,3 +1,4 @@
+import 'package:brew_coffee/core/theme/app_colors.dart';
 import 'package:brew_coffee/core/theme/receipt_theme.dart';
 import 'package:brew_coffee/core/utils/breakpoints.dart';
 import 'package:brew_coffee/core/widgets/coffee_cup_view.dart';
@@ -78,9 +79,13 @@ class _Preview extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Center(
+                  Center(
                     child: CoffeeCupView(
-                      visual: CupVisualState(espressoLevel: 0.4, milkLevel: 0.2),
+                      visual: CupVisualState.customizationPreview(
+                        milk: customization.milk,
+                        temperature: customization.temperature,
+                        topping: customization.topping,
+                      ),
                       size: 180,
                     ),
                   ),
@@ -213,16 +218,9 @@ class _Controls extends StatelessWidget {
         ),
         _OptionSection(
           title: 'Topping',
-          child: Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: Topping.values.map((t) {
-              return ChoiceChip(
-                label: Text(t.label),
-                selected: customization.topping == t,
-                onSelected: (_) => cubit.updateTopping(t),
-              );
-            }).toList(),
+          child: _ToppingPicker(
+            selected: customization.topping,
+            onSelected: cubit.updateTopping,
           ),
         ),
         const SizedBox(height: 24),
@@ -231,6 +229,126 @@ class _Controls extends StatelessWidget {
           child: const Text('MAKE MY COFFEE'),
         ),
       ],
+    );
+  }
+}
+
+class _ToppingPicker extends StatelessWidget {
+  const _ToppingPicker({
+    required this.selected,
+    required this.onSelected,
+  });
+
+  final Topping selected;
+  final ValueChanged<Topping> onSelected;
+
+  static const _prices = <Topping, String>{
+    Topping.none: 'Included',
+    Topping.whippedCream: '+30',
+    Topping.cinnamon: 'Free',
+    Topping.cocoa: '+15',
+    Topping.caramelDrizzle: '+20',
+  };
+
+  static IconData _iconFor(Topping topping) {
+    return switch (topping) {
+      Topping.none => Icons.block_outlined,
+      Topping.whippedCream => Icons.cloud_outlined,
+      Topping.cinnamon => Icons.grain,
+      Topping.cocoa => Icons.circle,
+      Topping.caramelDrizzle => Icons.water_drop_outlined,
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final tileWidth = (constraints.maxWidth - 8) / 2;
+        return Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: Topping.values.map((topping) {
+            final isSelected = selected == topping;
+            return SizedBox(
+              width: tileWidth,
+              child: Material(
+                color: isSelected
+                    ? AppColors.primaryCoffee.withOpacity(0.08)
+                    : AppColors.cardBackground,
+                borderRadius: BorderRadius.circular(12),
+                child: InkWell(
+                  onTap: () => onSelected(topping),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isSelected
+                            ? AppColors.primaryCoffee
+                            : AppColors.borderDivider,
+                        width: isSelected ? 2 : 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          _iconFor(topping),
+                          size: 22,
+                          color: isSelected
+                              ? AppColors.primaryCoffee
+                              : AppColors.secondaryText,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                topping.label,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelLarge
+                                    ?.copyWith(
+                                      fontWeight: isSelected
+                                          ? FontWeight.w700
+                                          : FontWeight.w500,
+                                      color: isSelected
+                                          ? AppColors.primaryCoffee
+                                          : AppColors.primaryText,
+                                    ),
+                              ),
+                              Text(
+                                _prices[topping]!,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelSmall
+                                    ?.copyWith(
+                                      color: AppColors.secondaryText,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (isSelected)
+                          const Icon(
+                            Icons.check_circle,
+                            size: 18,
+                            color: AppColors.primaryCoffee,
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        );
+      },
     );
   }
 }

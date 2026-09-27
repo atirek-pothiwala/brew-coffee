@@ -1,3 +1,4 @@
+import 'package:brew_coffee/domain/entities/enums.dart';
 import 'package:equatable/equatable.dart';
 
 class CupVisualState extends Equatable {
@@ -22,6 +23,32 @@ class CupVisualState extends Equatable {
   final bool showCinnamon;
   final bool showCocoa;
   final bool showCaramelDrizzle;
+
+  /// Live preview on the customization receipt (filled cup + selected topping).
+  factory CupVisualState.customizationPreview({
+    required MilkType milk,
+    required Temperature temperature,
+    required Topping topping,
+  }) {
+    final hasMilk = milk != MilkType.none;
+    final base = CupVisualState(
+      espressoLevel: 0.52,
+      milkLevel: hasMilk ? 0.38 : 0.14,
+      milkOpacity: hasMilk ? 0.55 : 0.25,
+      liquidColor: temperature == Temperature.iced ? 0xFF6B4E3D : 0xFF8B6046,
+      showSteam: temperature != Temperature.iced,
+    );
+    return base.withTopping(topping);
+  }
+
+  CupVisualState withTopping(Topping topping) {
+    return copyWith(
+      showWhippedCream: topping == Topping.whippedCream,
+      showCinnamon: topping == Topping.cinnamon,
+      showCocoa: topping == Topping.cocoa,
+      showCaramelDrizzle: topping == Topping.caramelDrizzle,
+    );
+  }
 
   CupVisualState copyWith({
     double? espressoLevel,
@@ -51,7 +78,12 @@ class CupVisualState extends Equatable {
   List<Object?> get props => [
         espressoLevel,
         milkLevel,
+        milkOpacity,
+        liquidColor,
         showSteam,
         showWhippedCream,
+        showCinnamon,
+        showCocoa,
+        showCaramelDrizzle,
       ];
 }

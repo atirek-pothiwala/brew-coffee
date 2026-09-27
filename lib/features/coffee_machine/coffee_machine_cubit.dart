@@ -144,28 +144,20 @@ class CoffeeMachineCubit extends Cubit<CoffeeMachineState> {
           liquidColor: 0xFF8B6046,
         );
       case CoffeeMachinePhase.addingToppings:
-        return CupVisualState(
+        return const CupVisualState(
           espressoLevel: 0.55,
           milkLevel: 0.4,
           milkOpacity: 0.55,
           liquidColor: 0xFF8B6046,
-          showWhippedCream: customization.topping == Topping.whippedCream,
-          showCinnamon: customization.topping == Topping.cinnamon,
-          showCocoa: customization.topping == Topping.cocoa,
-          showCaramelDrizzle: customization.topping == Topping.caramelDrizzle,
-        );
+        ).withTopping(customization.topping);
       case CoffeeMachinePhase.finalizing:
       case CoffeeMachinePhase.completed:
-        return CupVisualState(
+        return const CupVisualState(
           espressoLevel: 0.55,
           milkLevel: 0.42,
           milkOpacity: 0.6,
           liquidColor: 0xFF8B6046,
-          showWhippedCream: customization.topping == Topping.whippedCream,
-          showCinnamon: customization.topping == Topping.cinnamon,
-          showCocoa: customization.topping == Topping.cocoa,
-          showCaramelDrizzle: customization.topping == Topping.caramelDrizzle,
-        );
+        ).withTopping(customization.topping);
       default:
         return const CupVisualState();
     }
