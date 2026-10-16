@@ -2,6 +2,7 @@ import 'package:brew_coffee/core/theme/receipt_theme.dart';
 import 'package:brew_coffee/core/utils/currency_format.dart';
 import 'package:brew_coffee/core/widgets/app_shell.dart';
 import 'package:brew_coffee/core/widgets/receipt/receipt_paper.dart';
+import 'package:brew_coffee/domain/entities/enums.dart';
 import 'package:brew_coffee/domain/entities/order.dart';
 import 'package:brew_coffee/features/orders/orders_history_cubit.dart';
 import 'package:flutter/material.dart';
