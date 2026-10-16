@@ -64,9 +64,10 @@ class AppShell extends StatelessWidget {
 }
 
 class BrewAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const BrewAppBar({super.key, this.showCart = true});
+  const BrewAppBar({super.key, this.showCart = true, this.pageTitle});
 
   final bool showCart;
+  final String? pageTitle;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -75,24 +76,31 @@ class BrewAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final cartCount = context.watch<CartCubit>().state.totals.itemCount;
     return AppBar(
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            AppBranding.logoMark,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 4,
+      title: pageTitle != null
+          ? Text(
+              pageTitle!,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppBranding.logoMark,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 4,
+                      ),
                 ),
-          ),
-          Text(
-            AppBranding.tagline,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: AppColors.secondaryText,
+                Text(
+                  AppBranding.tagline,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: AppColors.secondaryText,
+                      ),
                 ),
-          ),
-        ],
-      ),
+              ],
+            ),
       actions: [
         if (showCart)
           IconButton(

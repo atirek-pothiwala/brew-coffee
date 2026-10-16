@@ -143,7 +143,7 @@ class _HeroSection extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Watch your drink come to life on our simulated espresso bar.',
+            'Customize your drink, then watch it fill cup-by-cup—from grind to ready.',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Colors.white.withOpacity(0.85),
                 ),

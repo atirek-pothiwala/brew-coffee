@@ -1,3 +1,4 @@
+import 'package:brew_coffee/core/utils/currency_format.dart';
 import 'package:brew_coffee/core/theme/app_colors.dart';
 import 'package:brew_coffee/core/theme/receipt_theme.dart';
 import 'package:brew_coffee/core/utils/breakpoints.dart';
@@ -38,24 +39,38 @@ class CustomizationScreen extends StatelessWidget {
         return Scaffold(
           appBar: AppBar(title: Text(c.coffee.name)),
           body: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.fromLTRB(20, 20, 20, desktop ? 20 : 100),
             child: desktop
                 ? Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(child: _Preview(c)),
                       const SizedBox(width: 32),
-                      Expanded(child: _Controls(customization: c)),
+                      Expanded(child: _Controls(customization: c, showPrimaryCta: true)),
                     ],
                   )
                 : Column(
                     children: [
                       _Preview(c),
                       const SizedBox(height: 24),
-                      _Controls(customization: c),
+                      _Controls(customization: c, showPrimaryCta: false),
                     ],
                   ),
           ),
+          bottomNavigationBar: desktop
+              ? null
+              : SafeArea(
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.cardBackground,
+                      border: Border(
+                        top: BorderSide(color: AppColors.borderDivider),
+                      ),
+                    ),
+                    child: _MakeCoffeeBar(customization: c),
+                  ),
+                ),
         );
       },
     );
@@ -123,10 +138,56 @@ class _Preview extends StatelessWidget {
   }
 }
 
-class _Controls extends StatelessWidget {
-  const _Controls({required this.customization});
+class _MakeCoffeeBar extends StatelessWidget {
+  const _MakeCoffeeBar({required this.customization});
 
   final CoffeeCustomization customization;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Total',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: AppColors.secondaryText,
+                    ),
+              ),
+              Text(
+                formatCurrency(customization.unitPrice),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppColors.primaryCoffee,
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: ElevatedButton(
+            onPressed: () => context.go('/coffee/${customization.coffee.id}/brew'),
+            child: const Text('MAKE MY COFFEE'),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _Controls extends StatelessWidget {
+  const _Controls({
+    required this.customization,
+    required this.showPrimaryCta,
+  });
+
+  final CoffeeCustomization customization;
+  final bool showPrimaryCta;
 
   @override
   Widget build(BuildContext context) {
@@ -163,15 +224,13 @@ class _Controls extends StatelessWidget {
         ),
         _OptionSection(
           title: 'Sugar portions',
-          child: Row(
+          child: Wrap(
+            spacing: 8,
             children: List.generate(5, (i) {
-              return Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: ChoiceChip(
-                  label: Text('$i'),
-                  selected: customization.sugarPortions == i,
-                  onSelected: (_) => cubit.updateSugar(i),
-                ),
+              return ChoiceChip(
+                label: Text('$i'),
+                selected: customization.sugarPortions == i,
+                onSelected: (_) => cubit.updateSugar(i),
               );
             }),
           ),
@@ -223,11 +282,13 @@ class _Controls extends StatelessWidget {
             onSelected: cubit.updateTopping,
           ),
         ),
-        const SizedBox(height: 24),
-        ElevatedButton(
-          onPressed: () => context.go('/coffee/${customization.coffee.id}/brew'),
-          child: const Text('MAKE MY COFFEE'),
-        ),
+        if (showPrimaryCta) ...[
+          const SizedBox(height: 24),
+          ElevatedButton(
+            onPressed: () => context.go('/coffee/${customization.coffee.id}/brew'),
+            child: const Text('MAKE MY COFFEE'),
+          ),
+        ],
       ],
     );
   }

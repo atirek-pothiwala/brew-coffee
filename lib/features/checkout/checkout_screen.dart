@@ -7,6 +7,7 @@ import 'package:brew_coffee/core/widgets/receipt/receipt_header.dart';
 import 'package:brew_coffee/core/widgets/receipt/receipt_line_widgets.dart';
 import 'package:brew_coffee/core/widgets/receipt/receipt_paper.dart';
 import 'package:brew_coffee/core/widgets/receipt/receipt_scaffold.dart';
+import 'package:brew_coffee/core/widgets/receipt/receipt_text_field.dart';
 import 'package:brew_coffee/core/widgets/receipt/receipt_zigzag_bottom.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -46,12 +47,13 @@ class CheckoutScreen extends StatelessWidget {
                 ReceiptRowTotal(label: 'TOTAL', amount: totals.total, emphasize: true),
                 const SizedBox(height: 16),
                 Text('CUSTOMER', style: ReceiptTheme.lineTitle(context)),
-                TextField(
-                  decoration: const InputDecoration(hintText: 'Name'),
+                ReceiptTextField(
+                  hintText: 'Name',
                   onChanged: context.read<CheckoutCubit>().setName,
                 ),
-                TextField(
-                  decoration: const InputDecoration(hintText: 'Email'),
+                ReceiptTextField(
+                  hintText: 'Email',
+                  keyboardType: TextInputType.emailAddress,
                   onChanged: context.read<CheckoutCubit>().setEmail,
                 ),
                 const SizedBox(height: 12),

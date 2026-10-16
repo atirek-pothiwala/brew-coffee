@@ -21,7 +21,28 @@ class OrdersHistoryScreen extends StatelessWidget {
       body: state.loading
           ? const Center(child: CircularProgressIndicator())
           : state.orders.isEmpty
-              ? const Center(child: Text('No orders yet — your receipt stack is empty.'))
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: ReceiptPaper(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        children: [
+                          Text(
+                            'NO ORDERS YET',
+                            style: ReceiptTheme.lineTitle(context),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Your receipt stack is empty.\nBrew something and check out.',
+                            textAlign: TextAlign.center,
+                            style: ReceiptTheme.lineDetail(context),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
               : ListView.builder(
                   padding: const EdgeInsets.all(24),
                   itemCount: state.orders.length,
@@ -67,6 +88,11 @@ class _StackedReceiptPreview extends StatelessWidget {
                 children: [
                   Text('ORDER #${order.displayNumber}', style: ReceiptTheme.meta(context)),
                   Text(date, style: ReceiptTheme.meta(context)),
+                  const SizedBox(height: 4),
+                  Text(
+                    order.statusStep.label,
+                    style: ReceiptTheme.lineTitle(context).copyWith(fontSize: 11),
+                  ),
                   const SizedBox(height: 8),
                   Text(
                     order.items.map((i) => i.customization.coffee.name).join(', '),

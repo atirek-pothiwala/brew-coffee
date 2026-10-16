@@ -33,7 +33,7 @@ class _CoffeeMachineScreenState extends State<CoffeeMachineScreen> {
       builder: (context, state) {
         return Scaffold(
           backgroundColor: AppColors.primaryBackground,
-          appBar: AppBar(title: const Text('PREPARING YOUR COFFEE')),
+          appBar: AppBar(title: const Text('Preparing your coffee')),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(

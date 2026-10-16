@@ -41,12 +41,14 @@ class _OrderSuccessScreenState extends State<OrderSuccessScreen> {
   Widget build(BuildContext context) {
     final order = _order;
     return ReceiptScaffold(
+      appBarTitle: 'Order confirmed',
       child: Column(
         children: [
           if (order == null)
             const CircularProgressIndicator()
           else ...[
-            Text('☕', style: const TextStyle(fontSize: 36)),
+            Icon(Icons.local_cafe, size: 40, color: AppColors.primaryCoffee),
+            const SizedBox(height: 8),
             Text(
               'YOUR ORDER IS READY',
               style: ReceiptTheme.lineTitle(context),

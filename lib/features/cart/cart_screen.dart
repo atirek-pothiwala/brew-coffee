@@ -1,4 +1,4 @@
-import 'package:brew_coffee/core/theme/app_colors.dart';
+import 'package:brew_coffee/core/theme/receipt_theme.dart';
 import 'package:brew_coffee/core/widgets/receipt/receipt_divider.dart';
 import 'package:brew_coffee/core/widgets/receipt/receipt_header.dart';
 import 'package:brew_coffee/core/widgets/receipt/receipt_line_widgets.dart';
@@ -31,7 +31,7 @@ class CartScreen extends StatelessWidget {
                 if (cart.items.isEmpty)
                   Text(
                     'No items yet — brew something wonderful.',
-                    style: ReceiptThemeFallback.detail(context),
+                    style: ReceiptTheme.lineDetail(context),
                   )
                 else
                   ...cart.items.map((item) {
@@ -41,32 +41,7 @@ class CartScreen extends StatelessWidget {
                       details: item.customization.summaryLines(),
                       actions: Padding(
                         padding: const EdgeInsets.only(top: 8),
-                        child: Row(
-                          children: [
-                            IconButton(
-                              onPressed: () =>
-                                  context.read<CartCubit>().decrement(item.id),
-                              icon: const Icon(Icons.remove, size: 18),
-                            ),
-                            Text('${item.quantity}'),
-                            IconButton(
-                              onPressed: () =>
-                                  context.read<CartCubit>().increment(item.id),
-                              icon: const Icon(Icons.add, size: 18),
-                            ),
-                            TextButton(
-                              onPressed: () =>
-                                  context.read<CartCubit>().remove(item.id),
-                              child: const Text('Remove'),
-                            ),
-                            TextButton(
-                              onPressed: () => context.go(
-                                '/coffee/${item.customization.coffee.id}',
-                              ),
-                              child: const Text('Edit'),
-                            ),
-                          ],
-                        ),
+                        child: _CartLineActions(itemId: item.id, coffeeId: item.customization.coffee.id),
                       ),
                     );
                   }),
@@ -97,8 +72,51 @@ class CartScreen extends StatelessWidget {
   }
 }
 
-/// Avoid importing receipt_theme in cart for meta only — thin helper.
-class ReceiptThemeFallback {
-  static TextStyle detail(BuildContext context) =>
-      Theme.of(context).textTheme.bodySmall!.copyWith(color: AppColors.secondaryText);
+class _CartLineActions extends StatelessWidget {
+  const _CartLineActions({required this.itemId, required this.coffeeId});
+
+  final String itemId;
+  final String coffeeId;
+
+  @override
+  Widget build(BuildContext context) {
+    final cart = context.watch<CartCubit>().state;
+    final item = cart.items.firstWhere((i) => i.id == itemId);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            IconButton(
+              visualDensity: VisualDensity.compact,
+              onPressed: () => context.read<CartCubit>().decrement(itemId),
+              icon: const Icon(Icons.remove_circle_outline, size: 22),
+            ),
+            Text(
+              '${item.quantity}',
+              style: ReceiptTheme.lineTitle(context),
+            ),
+            IconButton(
+              visualDensity: VisualDensity.compact,
+              onPressed: () => context.read<CartCubit>().increment(itemId),
+              icon: const Icon(Icons.add_circle_outline, size: 22),
+            ),
+          ],
+        ),
+        Wrap(
+          spacing: 4,
+          children: [
+            TextButton(
+              onPressed: () => context.read<CartCubit>().remove(itemId),
+              child: const Text('Remove'),
+            ),
+            TextButton(
+              onPressed: () => context.go('/coffee/$coffeeId'),
+              child: const Text('Edit'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 }
